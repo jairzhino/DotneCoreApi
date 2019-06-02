@@ -13,6 +13,6 @@ namespace Backend.Model{
 
         [Required]
         [ForeignKey("Country")]
-        public int cityId { get; set; }
+        public int countryId { get; set; }
     }
 }

@@ -3,30 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Backend.Model;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class CountryController : ControllerBase
+    public class CityController : ControllerBase
     {
         private readonly ContextDB _context;
-        public CountryController(ContextDB context)
+        public CityController(ContextDB context)
         {
             _context = context;
         }
 
         // GET api/values
         [HttpGet]
-        public async Task<IEnumerable<Country>> Get()
+        public async Task<IEnumerable<City>> Get()
         {
             try
             {
-                return await Task.Factory.StartNew(() => { return _context.countries.Include(p=>p.cities).AsEnumerable(); });
+                return await Task.Factory.StartNew(() => { return _context.cities.AsEnumerable(); });
             }
             catch (System.Exception ex)
             {
@@ -36,14 +34,14 @@ namespace Backend.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public async Task<Country> Get(int id)
+        public async Task<City> Get(int id)
         {
             try
             {
-                Country country=await _context.countries.FirstOrDefaultAsync(p => p.id.Equals(id));
-                if(country==null)
+                City city=await _context.cities.FirstOrDefaultAsync(p => p.id.Equals(id));
+                if(city==null)
                     throw new Exception($"The element with Id:{id} does not exist");
-                return country;
+                return city;
             }
             catch (System.Exception ex)
             {
@@ -53,13 +51,13 @@ namespace Backend.Controllers
 
         // POST api/values
         [HttpPost]
-        public async Task<int> Post([FromBody] Country value)
+        public async Task<int> Post([FromBody] City value)
         {
             try
             {
                 if (value.id > 0)
                     throw new Exception("Id property must be 0");
-                await _context.countries.AddAsync(value);
+                await _context.cities.AddAsync(value);
                 await _context.SaveChangesAsync();
                 return value.id;
             }
@@ -71,7 +69,7 @@ namespace Backend.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public async Task<bool> Put(int id, [FromBody] Country value)
+        public async Task<bool> Put(int id, [FromBody] City value)
         {
             try
             {
@@ -79,8 +77,9 @@ namespace Backend.Controllers
                     throw new Exception("Model View is Invalid");
                 if (value.id == 0)
                     throw new Exception("Id property must be greater than 0");
-                Country country = await _context.countries.FirstAsync(p => p.id.Equals(id));
-                country.name = value.name;
+                City city = await _context.cities.FirstAsync(p => p.id.Equals(id));
+                city.name = value.name;
+                city.countryId = value.countryId;
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -98,8 +97,8 @@ namespace Backend.Controllers
             {
                 if (id == 0)
                     throw new Exception("Id property must be greater than 0");
-                Country country = await _context.countries.FirstAsync(p => p.id.Equals(id));
-                _context.countries.Remove(country);
+                City city = await _context.cities.FirstAsync(p => p.id.Equals(id));
+                _context.cities.Remove(city);
                 await _context.SaveChangesAsync();
                 return true;
             }
