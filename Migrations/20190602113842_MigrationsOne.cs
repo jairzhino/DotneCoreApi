@@ -2,7 +2,7 @@
 
 namespace Backend.Migrations
 {
-    public partial class FirstMigration : Migration
+    public partial class MigrationsOne : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -26,24 +26,23 @@ namespace Backend.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     name = table.Column<string>(maxLength: 50, nullable: false),
-                    cityId = table.Column<int>(nullable: false),
-                    Countryid = table.Column<int>(nullable: true)
+                    countryId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_cities", x => x.id);
                     table.ForeignKey(
-                        name: "FK_cities_countries_Countryid",
-                        column: x => x.Countryid,
+                        name: "FK_cities_countries_countryId",
+                        column: x => x.countryId,
                         principalTable: "countries",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_cities_Countryid",
+                name: "IX_cities_countryId",
                 table: "cities",
-                column: "Countryid");
+                column: "countryId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
