@@ -13,6 +13,12 @@ using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using Backend.Model;
 using Backend.Middleware;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Http;
+using System.Net;
+using Newtonsoft.Json;
 
 namespace Backend
 {
@@ -28,7 +34,41 @@ namespace Backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ContextDB>(opt=>opt.UseSqlite("Filename=database.db"));
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+                options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = "localhost",
+                        ValidAudience = "localhost",
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.
+                            GetBytes("lkdFJAfakjdklfJFLKASJD34598234789WEFJAEUR83945Q0987RSJDFLKSDJFajlksjdfljierot39847589234jerijakdjfad"))
+                    };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnChallenge = context =>
+                        {
+                            context.HandleResponse();
+
+                            Dictionary<string, string[]> dic = new Dictionary<string, string[]>();
+                            dic.Add("Forbbiden", new string[] { "Error the Token is invalid or forbbiden for this Controller" });
+                            //var response = new Response(HttpStatusCode.Forbidden, "Your session has ended due to inactivity");
+                            context.Response.ContentType="application/json";
+                            ValidationProblemDetails vp = new ValidationProblemDetails(dic);
+                            vp.Status = (int)HttpStatusCode.Forbidden;
+                            vp.Title = "Error";
+                            //return context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+                            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                            return context.Response.WriteAsync(JsonConvert.SerializeObject(vp));
+                        }
+                    };
+                }
+            );
+
+            services.AddDbContext<ContextDB>(opt => opt.UseSqlite("Filename=database.db"));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -45,8 +85,10 @@ namespace Backend
                 app.UseHsts();
             }
 
+
             app.ConfigureExceptionHandler();
-            
+            app.UseAuthentication();
+
             app.UseHttpsRedirection();
             app.UseMvc();
         }
