@@ -5,12 +5,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 namespace Backend.Middleware{
     public static class ErrorHandlerMiddleware
     {
-
         public static void ConfigureExceptionHandler(this IApplicationBuilder app){
+            
             app.UseExceptionHandler(
                 appError=>{
                     appError.Run(
@@ -26,7 +27,9 @@ namespace Backend.Middleware{
                                 ValidationProblemDetails vp=new ValidationProblemDetails(dic);
                                 vp.Status=(int)HttpStatusCode.InternalServerError;
                                 vp.Title="Error";
-                                await context.Response.WriteAsync(JsonConvert.SerializeObject(vp));
+                                string errors=JsonConvert.SerializeObject(vp);
+                                
+                                await context.Response.WriteAsync(errors);
                             }
                         }
                     );
