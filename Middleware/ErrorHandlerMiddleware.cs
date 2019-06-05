@@ -7,9 +7,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using NLog;
+using NLog.Web;
+
 namespace Backend.Middleware{
     public static class ErrorHandlerMiddleware
     {
+        static Logger logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();  
         public static void ConfigureExceptionHandler(this IApplicationBuilder app){
             
             app.UseExceptionHandler(
@@ -28,7 +32,7 @@ namespace Backend.Middleware{
                                 vp.Status=(int)HttpStatusCode.InternalServerError;
                                 vp.Title="Error";
                                 string errors=JsonConvert.SerializeObject(vp);
-                                
+                                logger.Error(errors);
                                 await context.Response.WriteAsync(errors);
                             }
                         }
