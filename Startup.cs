@@ -19,6 +19,7 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Backend
 {
@@ -34,6 +35,10 @@ namespace Backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSwaggerGen(c =>
+                                {
+                                    c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                                });
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 options =>
                 {
@@ -54,7 +59,7 @@ namespace Backend
                             context.HandleResponse();
 
                             Dictionary<string, string[]> dic = new Dictionary<string, string[]>();
-                            dic.Add("Forbbiden", new string[] { "Error the Token is invalid or forbbiden for this Controller("+context.Request.Path+")" });
+                            dic.Add("Forbbiden", new string[] { "Error the Token is invalid or forbbiden for this Controller(" + context.Request.Path + ")" });
                             //var response = new Response(HttpStatusCode.Forbidden, "Your session has ended due to inactivity");
                             context.Response.ContentType = "application/json";
                             ValidationProblemDetails vp = new ValidationProblemDetails(dic);
@@ -84,7 +89,11 @@ namespace Backend
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
 
             app.ConfigureExceptionHandler();
             app.Use(async (context, next) =>
