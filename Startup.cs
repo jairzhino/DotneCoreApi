@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Http;
 using System.Net;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Backend
 {
@@ -38,6 +39,14 @@ namespace Backend
             services.AddSwaggerGen(c =>
                                 {
                                     c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                                    c.AddSecurityDefinition("oauth2", new ApiKeyScheme
+                                    {
+                                        Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
+                                        In = "header",
+                                        Name = "Authorization",
+                                        Type = "apiKey"
+                                    });
+                                    c.OperationFilter<SecurityRequirementsOperationFilter>();
                                 });
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 options =>
