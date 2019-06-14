@@ -26,7 +26,7 @@ namespace Backend.Controllers
         {
             try
             {
-                return await Task.Factory.StartNew(() => { return _context.countries.Include(p=>p.cities).AsEnumerable(); });
+                return await Task.Factory.StartNew(() => { return _context.countries.Include(p => p.cities).AsEnumerable(); });
             }
             catch (System.Exception ex)
             {
@@ -40,8 +40,8 @@ namespace Backend.Controllers
         {
             try
             {
-                Country country=await _context.countries.FirstOrDefaultAsync(p => p.id.Equals(id));
-                if(country==null)
+                Country country = await _context.countries.FirstOrDefaultAsync(p => p.id.Equals(id));
+                if (country == null)
                     throw new Exception($"The element with Id:{id} does not exist");
                 return country;
             }
@@ -77,9 +77,12 @@ namespace Backend.Controllers
             {
                 if (!ModelState.IsValid)
                     throw new Exception("Model View is Invalid");
-                if (value.id == 0)
+                if (value.id == 0 || id == 0)
                     throw new Exception("Id property must be greater than 0");
-                Country country = await _context.countries.FirstAsync(p => p.id.Equals(id));
+                Country country = await _context.countries.FirstOrDefaultAsync(p => p.id.Equals(id));
+                if(country==null)
+                    throw new Exception("The country does not exist!!!");
+
                 country.name = value.name;
                 await _context.SaveChangesAsync();
                 return true;
@@ -98,7 +101,9 @@ namespace Backend.Controllers
             {
                 if (id == 0)
                     throw new Exception("Id property must be greater than 0");
-                Country country = await _context.countries.FirstAsync(p => p.id.Equals(id));
+                Country country = await _context.countries.FirstOrDefaultAsync(p => p.id.Equals(id));
+                if(country==null)
+                    throw new Exception("The country does not exist!!!");
                 _context.countries.Remove(country);
                 await _context.SaveChangesAsync();
                 return true;

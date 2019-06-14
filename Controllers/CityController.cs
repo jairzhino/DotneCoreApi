@@ -77,9 +77,12 @@ namespace Backend.Controllers
             {
                 if (!ModelState.IsValid)
                     throw new Exception("Model View is Invalid");
-                if (value.id == 0)
+                if (value.id == 0 || id == 0)
                     throw new Exception("Id property must be greater than 0");
                 City city = await _context.cities.FirstAsync(p => p.id.Equals(id));
+                if(city == null)
+                    throw new Exception("The City does not exist!!!");
+                    
                 city.name = value.name;
                 city.countryId = value.countryId;
                 await _context.SaveChangesAsync();
@@ -99,7 +102,9 @@ namespace Backend.Controllers
             {
                 if (id == 0)
                     throw new Exception("Id property must be greater than 0");
-                City city = await _context.cities.FirstAsync(p => p.id.Equals(id));
+                City city = await _context.cities.FirstOrDefaultAsync(p => p.id.Equals(id));
+                if(city == null)
+                    throw new Exception("The City does not exist!!!");
                 _context.cities.Remove(city);
                 await _context.SaveChangesAsync();
                 return true;
