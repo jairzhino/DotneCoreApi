@@ -5,14 +5,17 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-namespace Backend.Middleware
-{
+using NLog;
+using NLog.Web;
+
+namespace Backend.Middleware{
     public static class ErrorHandlerMiddleware
     {
-
-        public static void ConfigureExceptionHandler(this IApplicationBuilder app)
-        {
+        static Logger logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();  
+        public static void ConfigureExceptionHandler(this IApplicationBuilder app){
+            
             app.UseExceptionHandler(
                 appError =>
                 {
@@ -29,10 +32,12 @@ namespace Backend.Middleware
                                 Dictionary<string, string[]> dic = new Dictionary<string, string[]>();
                                 dic.Add("exception", new string[] { contextFeature.Error.Message });
 
-                                ValidationProblemDetails vp = new ValidationProblemDetails(dic);
-                                vp.Status=context.Response.StatusCode;
-                                vp.Title = "Error";
-                                await context.Response.WriteAsync(JsonConvert.SerializeObject(vp));
+                                ValidationProblemDetails vp=new ValidationProblemDetails(dic);
+                                vp.Status=(int)HttpStatusCode.InternalServerError;
+                                vp.Title="Error";
+                                string errors=JsonConvert.SerializeObject(vp);
+                                logger.Error(errors);
+                                await context.Response.WriteAsync(errors);
                             }
                         }
                     );

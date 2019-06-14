@@ -7,6 +7,9 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NLog;
+using NLog.Extensions.Logging;
+using NLog.Web;
 
 namespace Backend
 {
@@ -14,11 +17,23 @@ namespace Backend
     {
         public static void Main(string[] args)
         {
+            var Logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();  
+        
             CreateWebHostBuilder(args).Build().Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+                .ConfigureLogging(
+                    (HostingContext, logging)=>{
+                        logging.ClearProviders();  
+                        logging.AddConfiguration(HostingContext.Configuration.GetSection("Logging"));
+                        logging.AddConsole();
+                        logging.AddDebug();
+                        logging.AddEventSourceLogger();
+                        
+                    }
+                ).UseNLog();
     }
 }
