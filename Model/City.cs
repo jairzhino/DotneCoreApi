@@ -11,7 +11,7 @@ namespace Backend.Model{
         [StringLength(50)]
         public string name { get; set; }
 
-        [Required]
+        [Required(ErrorMessage="The value countryId must be greather than 1")]
         [ForeignKey("Country")]
         public int countryId { get; set; }
     }
