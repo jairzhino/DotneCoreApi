@@ -40,7 +40,7 @@ namespace Backend.Controllers
         {
             try
             {
-                Country country = await _context.countries.FirstOrDefaultAsync(p => p.id.Equals(id));
+                Country country = await _context.countries.Include(p=>p.cities).FirstOrDefaultAsync(p => p.id.Equals(id));
                 if (country == null)
                     throw new Exception($"The element with Id:{id} does not exist");
                 return country;
