@@ -61,7 +61,7 @@ namespace Backend
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.
                             GetBytes("lkdFJAfakjdklfJFLKASJD34598234789WEFJAEUR83945Q0987RSJDFLKSDJFajlksjdfljierot39847589234jerijakdjfad"))
                     };
-                    options.Events = new JwtBearerEvents
+                    options.Events = new JwtBearerEvents //Error Handling For Authentication Layer.
                     {
                         OnChallenge = context =>
                         {
@@ -104,11 +104,11 @@ namespace Backend
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
-            app.ConfigureExceptionHandler();
+            app.ConfigureExceptionHandler();//Error Handler for all throw exception.
             app.Use(async (context, next) =>
             {
                 await next();
-                if (context.Response.StatusCode == 404)
+                if (context.Response.StatusCode == 404)//Error Handler for EndPoint exception.
                 {
                     throw new Exception("Request Not Found, or path not exist (" + context.Request.Path + ")");
                 }
