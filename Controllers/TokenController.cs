@@ -5,7 +5,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Backend.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Backend.Controllers
@@ -14,6 +16,10 @@ namespace Backend.Controllers
     [ApiController]
     public class TokenController : ControllerBase
     {
+        private readonly string keyJwt;
+        public TokenController(IOptions<AppSettings> appSettings){
+            keyJwt=appSettings.Value.keyJwt;
+        }
         [HttpGet]
         public async Task<object[]> Get () {
             try
@@ -32,7 +38,7 @@ namespace Backend.Controllers
 
                     //Private Password
                     SymmetricSecurityKey key = new SymmetricSecurityKey (
-                        Encoding.UTF8.GetBytes ("lkdFJAfakjdklfJFLKASJD34598234789WEFJAEUR83945Q0987RSJDFLKSDJFajlksjdfljierot39847589234jerijakdjfad"));
+                        Encoding.UTF8.GetBytes (keyJwt));
 
                         SigningCredentials signingCredentials = new SigningCredentials (key, SecurityAlgorithms.HmacSha256Signature);
                         JwtSecurityToken token = new JwtSecurityToken (
