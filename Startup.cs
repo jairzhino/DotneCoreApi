@@ -16,6 +16,7 @@ using System.Net;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.Filters;
+using Backend.Utils;
 
 namespace Backend
 {
@@ -43,39 +44,9 @@ namespace Backend
                                     });
                                     c.OperationFilter<SecurityRequirementsOperationFilter>();
                                 });
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
-                options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = "localhost",
-                        ValidAudience = "localhost",
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.
-                            GetBytes("lkdFJAfakjdklfJFLKASJD34598234789WEFJAEUR83945Q0987RSJDFLKSDJFajlksjdfljierot39847589234jerijakdjfad"))
-                    };
-                    options.Events = new JwtBearerEvents //Error Handling For Authentication Layer.
-                    {
-                        OnChallenge = context =>
-                        {
-                            context.HandleResponse();
-
-                            Dictionary<string, string[]> dic = new Dictionary<string, string[]>();
-                            dic.Add("Forbbiden", new string[] { "Error the Token is invalid or forbbiden for this Controller(" + context.Request.Path + ")" });
-                            //var response = new Response(HttpStatusCode.Forbidden, "Your session has ended due to inactivity");
-                            context.Response.ContentType = "application/json";
-                            ValidationProblemDetails vp = new ValidationProblemDetails(dic);
-                            vp.Status = (int)HttpStatusCode.Forbidden;
-                            vp.Title = "Error";
-                            //return context.Response.WriteAsync(JsonConvert.SerializeObject(response));
-                            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                            return context.Response.WriteAsync(JsonConvert.SerializeObject(vp));
-                        }
-                    };
-                }
-            );
+            
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            ServiceJwt.ConfigureJwt(services,Configuration);
 
             services.AddDbContext<ContextDB>(opt => opt.UseSqlite("Filename=database.db"));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
