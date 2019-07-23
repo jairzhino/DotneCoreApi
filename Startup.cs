@@ -53,7 +53,7 @@ namespace Backend
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             ServiceJwt.ConfigureJwt(services,Configuration);
 
-            services.AddDbContext<ContextDB>(opt => opt.UseSqlite("Filename=database.db"));
+            services.AddDbContext<ContextDB>(opt => opt.UseSqlite(Configuration.GetConnectionString("sqlite")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
