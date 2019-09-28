@@ -37,8 +37,7 @@ namespace Backend.Controllers
                     Claim[] claimdata = claims.ToArray ();
 
                     //Private Password
-                    SymmetricSecurityKey key = new SymmetricSecurityKey (
-                        Encoding.UTF8.GetBytes (keyJwt));
+                    SymmetricSecurityKey key = new SymmetricSecurityKey (Encoding.UTF8.GetBytes (keyJwt));
 
                         SigningCredentials signingCredentials = new SigningCredentials (key, SecurityAlgorithms.HmacSha256Signature);
                         JwtSecurityToken token = new JwtSecurityToken (
