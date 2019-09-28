@@ -33,20 +33,26 @@ namespace Backend.Utils{
                         OnChallenge = context =>
                         {
                             context.HandleResponse();
-
+                            
                             Dictionary<string, string[]> dic = new Dictionary<string, string[]>();
-                            dic.Add("Forbbiden", new string[] { "Error the Token is invalid or forbbiden for this Controller(" + context.Request.Path + ")" });
+                            dic.Add("Forbbiden", new string[] { 
+                                "Error the Token is invalid or forbbiden for this Controller(" + context.Request.Path + ")",
+                                context.Error });
+                            
                             //var response = new Response(HttpStatusCode.Forbidden, "Your session has ended due to inactivity");
                             context.Response.ContentType = "application/json";
                             ValidationProblemDetails vp = new ValidationProblemDetails(dic);
                             vp.Status = (int)HttpStatusCode.Forbidden;
-                            vp.Title = "Error";
+                            vp.Title = "Error Auth";
                             //return context.Response.WriteAsync(JsonConvert.SerializeObject(response));
-                            context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                             return context.Response.WriteAsync(JsonConvert.SerializeObject(vp));
                         }
+                        
                     };
+                    
                 }
+                
             );
         }
     }

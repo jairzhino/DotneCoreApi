@@ -71,6 +71,10 @@ namespace Backend
                 {
                     throw new Exception("Request Not Found, or path not exist (" + context.Request.Path + ")");
                 }
+                if(context.Response.StatusCode == 403)
+                {
+                    throw new Exception($"Forbidden for this path {context.Request.Path}, the Role doesn't have authorization");
+                }
             });
             app.UseAuthentication();
 
