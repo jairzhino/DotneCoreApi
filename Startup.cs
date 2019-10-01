@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +9,8 @@ using Backend.Middleware;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.Filters;
 using Backend.Utils;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 
 namespace Backend
 {
@@ -27,13 +28,13 @@ namespace Backend
         {
             services.AddSwaggerGen(c =>
                                 {
-                                    c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
-                                    c.AddSecurityDefinition("oauth2", new ApiKeyScheme
+                                    c.SwaggerDoc("v1", new  OpenApiInfo { Title = "My API", Version = "v1" });
+                                    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                                     {
                                         Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
-                                        In = "header",
+                                        In = ParameterLocation.Header,
                                         Name = "Authorization",
-                                        Type = "apiKey"
+                                        Type = SecuritySchemeType.ApiKey
                                     });
                                     c.OperationFilter<SecurityRequirementsOperationFilter>();
                                 });
@@ -42,11 +43,11 @@ namespace Backend
             ServiceJwt.ConfigureJwt(services,Configuration);
 
             services.AddDbContext<ContextDB>(opt => opt.UseSqlite(Configuration.GetConnectionString("sqlite")));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -75,7 +76,11 @@ namespace Backend
             app.UseAuthentication();
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }
