@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Controllers
 {
-    [Authorize]
+    [Authorize(Roles="admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class CityController : ControllerBase
