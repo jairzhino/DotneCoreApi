@@ -76,7 +76,7 @@ namespace Backend
                     throw new Exception($"Forbidden for this path {context.Request.Path}, the Role doesn't have authorization");
                 }
             });
-            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseHttpsRedirection();
             app.UseRouting();
