@@ -15,6 +15,8 @@ namespace Backend.Utils{
         public static void ConfigureJwt(IServiceCollection services, IConfiguration Configuration){
             var appSettings = Configuration.GetSection("AppSettings:keyJwt");
             
+            
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 options =>
                 {
