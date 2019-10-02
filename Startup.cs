@@ -66,7 +66,7 @@ namespace Backend
             app.ConfigureExceptionHandler();//Error Handler for all throw exception.
             
             app.UseAuthentication();
-
+            app.UseAuthorization();
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseEndpoints(endpoints =>
