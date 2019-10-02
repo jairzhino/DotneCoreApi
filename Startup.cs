@@ -25,6 +25,7 @@ namespace Backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
             services.AddSwaggerGen(c =>
                                 {
                                     c.SwaggerDoc("v1", new  OpenApiInfo { Title = "My API", Version = "v1" });
@@ -37,7 +38,6 @@ namespace Backend
                                     });
                                     c.OperationFilter<SecurityRequirementsOperationFilter>();
                                 });
-            
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             ServiceJwt.ConfigureJwt(services,Configuration);
 
@@ -64,19 +64,8 @@ namespace Backend
             });
 
             app.ConfigureExceptionHandler();//Error Handler for all throw exception.
-            app.Use(async (context, next) =>
-            {
-                await next();
-                if (context.Response.StatusCode == 404)//Error Handler for EndPoint exception.
-                {
-                    throw new Exception("Request Not Found, or path not exist (" + context.Request.Path + ")");
-                }
-                if(context.Response.StatusCode == 403)
-                {
-                    throw new Exception($"Forbidden for this path {context.Request.Path}, the Role doesn't have authorization");
-                }
-            });
-            app.UseAuthorization();
+            
+            app.UseAuthentication();
 
             app.UseHttpsRedirection();
             app.UseRouting();

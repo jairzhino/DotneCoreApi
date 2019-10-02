@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using System.Net;
 using Microsoft.AspNetCore.Builder;
@@ -42,6 +43,18 @@ namespace Backend.Middleware{
                     );
                 }
             );
+            app.Use(async (context, next) =>
+            {
+                await next();
+                if (context.Response.StatusCode == 404)//Error Handler for EndPoint exception.
+                {
+                    throw new Exception("Request Not Found, or path not exist (" + context.Request.Path + ")");
+                }
+                if(context.Response.StatusCode == 403)
+                {
+                    throw new Exception($"Forbidden for this path {context.Request.Path}, the Role doesn't have authorization");
+                }
+            });
 
         }
     }
