@@ -10,7 +10,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc4" />
     <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="5.0.0-rc8" />
     <!--Package for JWToken libraries-->
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.18" />
     <!--Package for SQLITE libraries-->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.0" />
